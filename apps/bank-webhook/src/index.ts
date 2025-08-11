@@ -3,28 +3,38 @@ import db from "@repo/db/client";
 
 const app = express();
 
+app.use(express.json());
+
 app.post("/hdfcWebhook", async (req, res) => {
     //TODO: Add zod validation here?
-    const paymentInformation = {
+    const paymentInformation: {
+        token: string,
+        userId: string,
+        amount: string
+    } = {
         token: req.body.token,
         userId: req.body.user_identifier,
         amount: req.body.amount
     };
+
+    //debug 
+    console.log({ userId: paymentInformation.userId, amouunt: paymentInformation.amount, token: paymentInformation.token });
+
     // Update balance in db, add txn
     try {
         await db.$transaction([
-            db.balance.update({
+            db.balance.updateMany({
                 where: {
-                    userId: paymentInformation.userId
+                    userId: Number(paymentInformation.userId)
                 },
                 data: {
                     amount: {
-                        increment: paymentInformation.amount
+                        increment: Number(paymentInformation.amount)
                     }
                 }
             }),
 
-            db.onRampTransaction.update({
+            db.onRampTransaction.updateMany({
                 where: {
                     token: paymentInformation.token
                 },
