@@ -6,7 +6,8 @@ const app = express();
 app.use(express.json());
 
 app.post("/hdfcWebhook", async (req, res) => {
-    //TODO: Add zod validation here?
+    //TODO1: Add zod validation here
+    //TODO2: Process only if the status is "processing"
     const paymentInformation: {
         token: string,
         userId: string,
